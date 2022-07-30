@@ -34,6 +34,7 @@
 
 
 node width = value_width + right extension width + left extension width
+
 edge comes from the end of the extension or last width position
 node values should not collide
 
@@ -55,3 +56,15 @@ left subtree of 1 is of width 3.
 thus, the left subtree extends left for its entire width, and thus we don't need extension
 
 for right subtree, its width is 5, but, its left width takes 3 of those 5, thus we need right extension for 1
+
+
+since node values should not collide, let's say there must be at least 2 empty spaces between any given nodes:
+
+   1
+  / \   - _ means spaces, so this one is ok!
+ 2___3
+
+
+   __1__
+  /     \    Here we add extensions, since values are too long
+2232___3234
