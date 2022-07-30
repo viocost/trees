@@ -23,7 +23,11 @@ class DrawNode:
             self.left_width = self.left.width
 
     def walk(self):
-        print(f'{self.node.value}, width: {self.width}, offset: {self.offset}, width left: {self.left_width}, width right: {self.right_width}')
+        print(f'\nNode {self.node.value}')
+        print(f'  width: {self.width}')
+        print(f'  left_width: {self.left_width}')
+        print(f'  right_width: {self.right_width}')
+
         if self.left:
             self.left.walk()
 
@@ -31,14 +35,17 @@ class DrawNode:
             self.right.walk()
 
 
-
-
-
-def draw_bst(node):
-    wrapped = DrawNode(node)
-
+def draw(root: DrawNode):
+    pass
 
 if __name__ == "__main__":
+    print("\n\nT1")
     root = TreeNode(14, TreeNode(2, TreeNode(6, TreeNode(7))), TreeNode(5, TreeNode(1, TreeNode(9)), TreeNode(13, TreeNode(4), TreeNode(8))))
+    wrapped = DrawNode(root)
+    wrapped.walk()
+
+    print("\n\nT2")
+    root = TreeNode(1, TreeNode(1234, TreeNode(123, TreeNode(23413)) ), TreeNode(129, TreeNode(32, TreeNode(3, TreeNode(5))), TreeNode(234)))
+
     wrapped = DrawNode(root)
     wrapped.walk()
