@@ -68,12 +68,51 @@ Extension is added then as needed based on children width
 
 #+end_src
 
+
+
+
+** Value placement
+Suppose X and Y are coordinates of the edge
+*** Value length is odd and edge is left
+    /
+ 52349
+
+    /
+   3
+
+value is placed at X - 1  - (len(value) // 2), Y + 1
+
+*** Value length is even and edge is left
+
+    /
+  832
+value is placed at X - (len(value) // 2), Y + 1
+
+
+*** Value length is odd and edge is right
+ \
+  1
+
+ \
+ 123
+
+value is placed at X + 1  - (len(value) // 2), Y + 1
+
+*** Value length is even and edge is right
+
+ \
+ 21
+
+ \
+1123
+
+value is placed at X  - (len(value) // 2), Y + 1
 * Some example trees
 #+begin_src
 
      __1__
     /     \
-  1234    1234
+  1234    134
     \     /
 
 
