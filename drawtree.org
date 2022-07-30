@@ -1,3 +1,75 @@
+* Spec
+node width = value_width + right extension width + left extension width
+
+edge comes from the end of the extension or last width position
+node values should not collide
+
+extension is calculated based on each child left and right width.
+consider this example:
+#+begin_src
+
+           _1_____
+          /       \
+       1234      129__
+        /         /   \
+      123        32   234
+      /         /
+    23413      3
+    /
+
+#+end_src
+left subtree of 1 is of width 3.
+1234 has left subtree of width 2, and right subtree of width 0.
+
+thus, the left subtree extends left for its entire width, and thus we don't need extension
+
+for right subtree, its width is 5, but, its left width takes 3 of those 5, thus we need right extension for 1
+
+
+since node values should not collide, let's say there must be at least 2 empty spaces between any given nodes:
+#+begin_src
+
+   1
+  / \   - _ means spaces, so this one is ok!
+ 2___3
+
+
+   __1__
+  /     \    Here we add extensions, since values are too long
+2232___3234
+
+
+** Sizing between edges
+If value length is odd: the spacing must be odd
+   234
+   / \
+  1  90
+
+    4
+   / \
+  1  90
+
+Same for even:
+   34
+  /  \
+ 1   90
+
+Extension is added then as needed based on children width
+
+#+begin_src
+   _34_
+  /    \
+1231  23490
+
+    __4__
+   /     \
+ 2341   3390
+#+end_src
+
+#+end_src
+
+* Some example trees
+#+begin_src
 
      __1__
     /     \
@@ -23,48 +95,25 @@
 
 
 
-           _1_____
-          /       \
-       1234      1234__
-        /         /    \
-      123        32    234
-      /         /
-    23413      3
-    /
+       _1_____
+      /       \
+   1234      1234_
+    /       /     \
+  123     32      234
+  /       /       / \
+23413    3       1  90
 
 
-node width = value_width + right extension width + left extension width
+   234
+   / \
+  1  90
 
-edge comes from the end of the extension or last width position
-node values should not collide
-
-extension is calculated based on each child left and right width.
-consider this example:
-
-           _1_____
-          /       \
-       1234      129__
-        /         /   \
-      123        32   234
-      /         /
-    23413      3
-    /
-
-left subtree of 1 is of width 3.
-1234 has left subtree of width 2, and right subtree of width 0.
-
-thus, the left subtree extends left for its entire width, and thus we don't need extension
-
-for right subtree, its width is 5, but, its left width takes 3 of those 5, thus we need right extension for 1
+   34
+  /  \
+ 1   90
 
 
-since node values should not collide, let's say there must be at least 2 empty spaces between any given nodes:
-
-   1
-  / \   - _ means spaces, so this one is ok!
- 2___3
-
-
-   __1__
-  /     \    Here we add extensions, since values are too long
-2232___3234
+    4
+   / \
+  1  90
+#+end_src

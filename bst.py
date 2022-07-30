@@ -6,3 +6,9 @@ class TreeNode:
 
     def __repr__(self) -> str:
         return str(self.value)
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    def __len__(self):
+        return len(self.__str__())

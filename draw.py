@@ -8,7 +8,7 @@ class DrawNode:
 
         self.left = None
         self.right = None
-        self.width = 1
+        self.width = len(node)
         self.left_width = 0
         self.right_width = 0
 
