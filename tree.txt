@@ -53,3 +53,5 @@ left subtree of 1 is of width 3.
 1234 has left subtree of width 2, and right subtree of width 0.
 
 thus, the left subtree extends left for its entire width, and thus we don't need extension
+
+for right subtree, its width is 5, but, its left width takes 3 of those 5, thus we need right extension for 1
