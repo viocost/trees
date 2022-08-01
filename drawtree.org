@@ -41,7 +41,7 @@ since node values should not collide, let's say there must be at least 2 empty s
 
 ** Sizing between edges
 If value length is odd: the spacing must be odd
-   234
+  12346
    / \
   1  90
 
@@ -107,6 +107,22 @@ value is placed at X + 1  - (len(value) // 2), Y + 1
 1123
 
 value is placed at X  - (len(value) // 2), Y + 1
+
+
+
+
+** How to draw
+1. We could draw line by line
+2. We could use some lib to draw picture by pixels
+
+
+Suppose we know the width of the first node.
+We need to calculate right and left extensions, then draw it all
+Then we need to place edges.
+Then we need to draw next level.
+
+How do we map next edges to child nodes?
+
 * Some example trees
 #+begin_src
 
