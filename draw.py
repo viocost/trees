@@ -38,6 +38,7 @@ class Edges:
 
 
 class DrawNode:
+
     def __init__(self, node: TreeNode, offset=0, level = 0) -> None:
         self.node = node
         self.offset = offset
@@ -57,31 +58,30 @@ class DrawNode:
 
         if node.left is not None:
             self.edges.left = Edge(EdgeDirection.LEFT, self.get_base_edge_offset_left())
-            self.left = DrawNode(node.left, offset-1, level + 1)
+            self.left = DrawNode(node.left, self.edges.left.offset-1, level + 1)
             self.width += self.left.width
             self.left_width = self.left.width
-            self.extension_left = max(-1 * (self.value_width - self.left.right_width), 0)
+            # self.extension_left = max(-1 * (self.value_width - self.left.right_width), 0)
 
         if node.right is not None:
             self.edges.right = Edge(EdgeDirection.RIGHT, self.get_base_edge_offset_right())
-            self.right = DrawNode(node.right, offset+1, level + 1)
+            self.right = DrawNode(node.right, self.edges.right.offset+1, level + 1)
             self.width += self.right.width
             self.right_width = self.right.width
-            # self.extension_right = max(-1 * (self.value_width - self.right.left_width), 0)
+            #self.extension_right = max(-1 * (self.value_width - self.right.left_width), 0)
+
+    @property
+    def pivot(self):
+        return self.offset + max(len(str(self)) - 2, 0)
 
 
     def get_base_edge_offset_right(self):
-        if self.value_width % 2 == 1:
-            return self.get_base_edge_offset_left() + 3
-
-        return self.get_base_edge_offset_left() + 1
+        return self.pivot + 1 if len(self) % 2 == 1 else self.pivot + 2
 
     def get_base_edge_offset_left(self):
 
-        if self.value_width % 2 == 1:
-            return (self.offset + self.value_width) - self.value_width
+        return self.pivot - 1
 
-        return (self.offset + self.value_width) - self.value_width 
 
 
     def get_left_child_offset(self, value_length, edge_offset):
@@ -145,7 +145,9 @@ def build_levels(root: DrawNode):
 
     return result
 
-def draw(levels: list[list[DrawNode]]):
+def draw(root: DrawNode):
+
+    levels = build_levels(root)
     for level in levels:
         line = ""
         offset = 0
@@ -164,13 +166,14 @@ def draw(levels: list[list[DrawNode]]):
             if left:
                 edge_line += " " * (left.offset - edge_offset)
                 edge_line += str(left)
-                edge_offset += (left.offset +1)
+                edge_offset = (left.offset +1)
 
 
             if right:
                 edge_line += " " * (right.offset - edge_offset)
                 edge_line += str(right)
-                edge_offset += (right.offset +1)
+                edge_offset = (right.offset +1)
+
         print(edge_line)
 
 
@@ -193,16 +196,17 @@ def main():
     wrapped.walk()
 
     print("In order")
-    levels = build_levels(wrapped)
-    draw(levels)
+    draw(wrapped)
 
     print("\n\nT2")
-    root = TreeNode(1, TreeNode(1234, TreeNode(123, TreeNode(23413)) ), TreeNode(129, TreeNode(32, TreeNode(3, TreeNode(5))), TreeNode(234)))
+    # root = TreeNode(1, TreeNode(1234, TreeNode(123, TreeNode(23413)) ), TreeNode(129, TreeNode(32, TreeNode(3, TreeNode(5))), TreeNode(234)))
+    root = TreeNode(8, TreeNode(1, TreeNode(4), TreeNode(3)), TreeNode(43332, TreeNode(8), TreeNode(9, None, TreeNode(12))))
 
 
-    wrapped = DrawNode(root)
+    wrapped = DrawNode(root, 40)
     wrapped.walk()
 
+    draw(wrapped)
 if __name__ == "__main__":
     main()
 
