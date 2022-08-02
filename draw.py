@@ -6,8 +6,8 @@ class EdgeDirection(Enum):
     RIGHT = 0
     LEFT = 1
 
-def with_offset(obj, func):
-    return obj.offset + func()
+PIVOT_MARGIN = 1
+
 
 class Edge:
     def __init__(self, direction: EdgeDirection, position: int) -> None:
@@ -47,7 +47,6 @@ class Edges:
         self._right = edge
 
 
-PIVOT_MARGIN = 4
 
 class DrawNode:
 
@@ -57,8 +56,6 @@ class DrawNode:
         self.level = level
 
         self.offset = 0
-        # self.extension_left = 0
-        # self.extension_right = 0
 
         self.left = None
         self.right = None
@@ -94,19 +91,24 @@ class DrawNode:
     @property
     def extension_left(self):
         if self.edges.left:
-            return max(self.position - self.edges.left.position, 0)
+            return max(self.position - self.edges.left.position - 1, 0)
         return 0
 
     @property
     def extension_right(self):
         if self.edges.right:
-            return max( self.edges.right.position - self.position + len(self.node)  , 0)
+            return max( self.edges.right.position - (self.position + len(self.node))  , 0)
         return 0
 
 
     @property
     def position(self):
         return self.offset + self._position
+
+    @property
+    def extended_position(self):
+        return self.position - self.extension_left
+
 
 
     @position.setter
@@ -130,13 +132,13 @@ class DrawNode:
     def left_boundary(self):
         if self.left:
             return min(self.position - self.extension_left, self.left.left_boundary)
-        return self.offset + self.position - self.extension_left
+        return self.position - self.extension_left
 
     @property
     def right_boundary(self):
         if self.right:
             return max(self.position + len(self.node) + self.extension_right, self.right.right_boundary)
-        return self.offset + self.position + len(self.node) + self.extension_right
+        return self.position + len(self.node) + self.extension_right
 
     @property
     def pivot(self):
@@ -232,9 +234,9 @@ def draw(root: DrawNode):
         line = ""
         position = 0
         for node in level:
-            line += " " * (node.position - position)
+            line += " " * (node.extended_position - position)
             line += str(node)
-            position = node.position + len(node)
+            position = node.extended_position + len(node)
 
         print(line)
 
@@ -271,7 +273,7 @@ def draw_aux(nodes, edges, canvas_width):
 
 def main():
     print("\n\nT1")
-    root = TreeNode(144, TreeNode(2, TreeNode(6, TreeNode(7))), TreeNode(5, TreeNode(1, TreeNode(9)), TreeNode(13, TreeNode(4), TreeNode(8))))
+    root = TreeNode(144, TreeNode(2, TreeNode(6, TreeNode(7)), TreeNode(1, None, TreeNode(9, None, TreeNode(22)))), TreeNode(5, TreeNode(1, TreeNode(9, TreeNode(23234234232, TreeNode(3), TreeNode(2)), TreeNode(234234)), TreeNode(323423423423445345)), TreeNode(13, TreeNode(4), TreeNode(8))))
     wrapped = DrawNode(root, 20)
     wrapped.walk()
 
@@ -283,6 +285,12 @@ def main():
     root = TreeNode(89, TreeNode(1, TreeNode(4), TreeNode(3)), TreeNode(332332, None, TreeNode(9, None, TreeNode(1))))
 
 
+    wrapped = DrawNode(root, 40)
+    wrapped.walk()
+
+    draw(wrapped)
+
+    root = TreeNode(9, TreeNode(3), TreeNode(14))
     wrapped = DrawNode(root, 40)
     wrapped.walk()
 

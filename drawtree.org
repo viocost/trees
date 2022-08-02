@@ -47,7 +47,7 @@ If value length is odd: the spacing must be odd
 
     4
    / \
-  1  90
+  19 49
 
 Same for even:
    34
