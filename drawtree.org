@@ -172,3 +172,11 @@ How do we map next edges to child nodes?
    / \
   1  90
 #+end_src
+
+#+begin_src
+
+   ___5____
+   |  |   |
+  12  3 hsdf
+
+#+end_src

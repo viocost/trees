@@ -191,10 +191,6 @@ class DrawNode:
         return len(str(self))
 
     def walk(self):
-        # print(f'\nNode {self}')
-        # print(f'  width: {self.width}')
-        # print(f'  left_width: {self.left_width}')
-        # print(f'  right_width: {self.right_width}')
 
         if self.left:
             self.left.walk()
@@ -227,6 +223,8 @@ def build_levels(root: DrawNode):
 
     return result
 
+
+
 def draw(root: DrawNode):
 
     levels = build_levels(root)
@@ -245,11 +243,11 @@ def draw(root: DrawNode):
         for node in level:
             left = node.edges.left
             right = node.edges.right
+
             if left:
                 edge_line += " " * (left.position - edge_position)
                 edge_line += str(left)
                 edge_position = (left.position +1)
-
 
             if right:
                 edge_line += " " * (right.position - edge_position)
@@ -275,7 +273,24 @@ def main():
     # wrapped.walk()
     # draw(wrapped)
 
-    root = TreeNode(92938479283749827834, TreeNode(3), TreeNode(14))
+
+
+    #      ______1__
+    #     /         \
+    #  1234        1234
+    #     \
+    #     45
+    #       \
+    #       789
+    #         \
+    #        2341
+
+    root = TreeNode(1, TreeNode(1234, None, TreeNode(45, None, TreeNode(789, None, TreeNode(2341)))), TreeNode(1234))
+    wrapped = DrawNode(root,  99)
+    draw(wrapped)
+
+
+    root = TreeNode(92938479283749827834, TreeNode("foobar"), TreeNode("asdfsdfsdsdfsadfsadfasdfsaf"))
     wrapped = DrawNode(root,  99)
     draw(wrapped)
 
