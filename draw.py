@@ -6,7 +6,8 @@ class EdgeDirection(Enum):
     RIGHT = 0
     LEFT = 1
 
-PIVOT_MARGIN = 1
+PIVOT_MARGIN = 2
+LEFT_MARGIN = 2
 
 
 class Edge:
@@ -50,7 +51,7 @@ class Edges:
 
 class DrawNode:
 
-    def __init__(self, node: TreeNode, position=0, level = 0) -> None:
+    def __init__(self, node: TreeNode, position=60, level = 0, adjust_position = True) -> None:
         self.node = node
         self._position = position
         self.level = level
@@ -68,25 +69,28 @@ class DrawNode:
 
         if node.left is not None:
             self.edges.left = Edge(EdgeDirection.LEFT, self.get_base_edge_position_left())
-            self.left = DrawNode(node.left, self.left_child_position, level + 1)
+            self.left = DrawNode(node.left, self.left_child_position, level + 1, False)
             self.width += self.left.width
             self.left_width = self.left.width
 
-            displacement = min(self.pivot - PIVOT_MARGIN - self.left.right_boundary, 0)
+            displacement = min(self.pivot - PIVOT_MARGIN + 1 - self.left.right_boundary, 0)
             self.left.move(displacement)
             self.edges.left.move(displacement)
-            # self.extension_left = max(-1 * (self.value_width - self.left.right_width), 0)
 
         if node.right is not None:
             self.edges.right = Edge(EdgeDirection.RIGHT, self.get_base_edge_position_right())
-            self.right = DrawNode(node.right, self.right_child_position, level + 1)
+            self.right = DrawNode(node.right, self.right_child_position, level + 1, False)
             self.width += self.right.width
             self.right_width = self.right.width
 
-            displacement = max(self.pivot + PIVOT_MARGIN - self.right.left_boundary  , 0)
+            displacement = max(self.pivot - self.value_width % 2 + PIVOT_MARGIN - self.right.left_boundary  , 0)
             self.right.move(displacement)
             self.edges.right.move(displacement)
-            #self.extension_right = max(-1 * (self.value_width - self.right.left_width), 0)
+
+
+        if adjust_position:
+            self.move(max(self.left_boundary - LEFT_MARGIN, 0) * -1)
+
 
     @property
     def extension_left(self):
@@ -142,7 +146,7 @@ class DrawNode:
 
     @property
     def pivot(self):
-        return self.position + max(len(str(self)) - 2, 0)
+        return self.position + max(self.value_width // 2 - 1 , 0)
 
     @property
     def left_child_position(self):
@@ -209,7 +213,6 @@ def build_levels(root: DrawNode):
     while len(queue) > 0:
         node = queue.pop(0)
 
-        print(node.node.value)
 
         if len(result) - 1 < node.level:
             result.append([])
@@ -221,9 +224,6 @@ def build_levels(root: DrawNode):
 
         if node.right:
             queue.append(node.right)
-
-    print(result)
-
 
     return result
 
@@ -261,39 +261,30 @@ def draw(root: DrawNode):
 
     
 
-def draw_aux(nodes, edges, canvas_width):
-    if len(nodes) == 0:
-        return
-    if len(edges) == 0:
-        pass
-    line = ""
-
-
-
 
 def main():
-    print("\n\nT1")
     root = TreeNode(144, TreeNode(2, TreeNode(6, TreeNode(7)), TreeNode(1, None, TreeNode(9, None, TreeNode(22)))), TreeNode(5, TreeNode(1, TreeNode(9, TreeNode(23234234232, TreeNode(3), TreeNode(2)), TreeNode(234234)), TreeNode(323423423423445345)), TreeNode(13, TreeNode(4), TreeNode(8))))
-    wrapped = DrawNode(root, 20)
-    wrapped.walk()
-
-    print("In order")
+    wrapped = DrawNode(root)
     draw(wrapped)
 
-    print("\n\nT2")
     # root = TreeNode(1, TreeNode(1234, TreeNode(123, TreeNode(23413)) ), TreeNode(129, TreeNode(32, TreeNode(3, TreeNode(5))), TreeNode(234)))
-    root = TreeNode(89, TreeNode(1, TreeNode(4), TreeNode(3)), TreeNode(332332, None, TreeNode(9, None, TreeNode(1))))
+    # root = TreeNode(89, TreeNode(1, TreeNode(4), TreeNode(3)), TreeNode(332332, None, TreeNode(9, None, TreeNode(1))))
 
 
-    wrapped = DrawNode(root, 40)
-    wrapped.walk()
+    # wrapped = DrawNode(root, 40)
+    # wrapped.walk()
+    # draw(wrapped)
 
+    root = TreeNode(92938479283749827834, TreeNode(3), TreeNode(14))
+    wrapped = DrawNode(root,  99)
     draw(wrapped)
 
-    root = TreeNode(9, TreeNode(3), TreeNode(14))
-    wrapped = DrawNode(root, 40)
-    wrapped.walk()
+    root = TreeNode(92, TreeNode(3), TreeNode(14))
+    wrapped = DrawNode(root)
+    draw(wrapped)
 
+    root = TreeNode(2, TreeNode(3), TreeNode(14))
+    wrapped = DrawNode(root)
     draw(wrapped)
 if __name__ == "__main__":
     main()
