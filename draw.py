@@ -2,6 +2,41 @@ from bst import TreeNode
 from enum import Enum
 
 
+class EdgeDirection(Enum):
+    RIGHT = 0
+    LEFT = 1
+
+
+class Edge:
+    def __init__(self, direction: EdgeDirection, offset: int) -> None:
+        self.direction = direction
+        self.offset = offset
+
+    def __str__(self) -> str:
+        return "/" if self.direction == EdgeDirection.LEFT else "\\"
+
+class Edges:
+    def __init__(self) -> None:
+        self._left = None
+        self._right = None
+
+    @property
+    def left(self):
+        return self._left
+
+    @left.setter
+    def left(self, edge: Edge):
+        self._left = edge
+
+    @property
+    def right(self):
+        return self._right
+
+    @right.setter
+    def right(self, edge: Edge):
+        self._right = edge
+
+
 class DrawNode:
     def __init__(self, node: TreeNode, offset=0, level = 0) -> None:
         self.node = node
@@ -14,38 +49,39 @@ class DrawNode:
         self.left = None
         self.right = None
         self.width = len(node)
-        self.value_width = len(node)
+        self.value_width = len(str(node.value))
         self.left_width = 0
         self.right_width = 0
 
-        self.edges = {
-            EdgeDirection.RIGHT: type(Edge),
-            EdgeDirection.LEFT: type(Edge)
-        }
-
-        if node.right is not None:
-            self.edges[EdgeDirection.RIGHT] = Edge(EdgeDirection.RIGHT, self.get_base_edge_offset_right())
-            self.right = DrawNode(node.right, offset+1, level + 1)
-            self.width += self.right.width
-            self.right_width = self.right.width
-            # self.extension_right = max(-1 * (self.value_width - self.right.left_width), 0)
+        self.edges = Edges()
 
         if node.left is not None:
+            self.edges.left = Edge(EdgeDirection.LEFT, self.get_base_edge_offset_left())
             self.left = DrawNode(node.left, offset-1, level + 1)
             self.width += self.left.width
             self.left_width = self.left.width
             self.extension_left = max(-1 * (self.value_width - self.left.right_width), 0)
 
+        if node.right is not None:
+            self.edges.right = Edge(EdgeDirection.RIGHT, self.get_base_edge_offset_right())
+            self.right = DrawNode(node.right, offset+1, level + 1)
+            self.width += self.right.width
+            self.right_width = self.right.width
+            # self.extension_right = max(-1 * (self.value_width - self.right.left_width), 0)
+
+
     def get_base_edge_offset_right(self):
         if self.value_width % 2 == 1:
-            return self.get_base_edge_offset_left() + 2
+            return self.get_base_edge_offset_left() + 3
+
+        return self.get_base_edge_offset_left() + 1
 
     def get_base_edge_offset_left(self):
 
         if self.value_width % 2 == 1:
-            return (self.offset + self.value_width) - self.value_width // 2
+            return (self.offset + self.value_width) - self.value_width
 
-        return (self.offset + self.value_width) - self.value_width // 2
+        return (self.offset + self.value_width) - self.value_width 
 
 
     def get_left_child_offset(self, value_length, edge_offset):
@@ -63,7 +99,10 @@ class DrawNode:
         return "_" * self.extension_left + f"{self.node.value}" + "_" * self.extension_right
 
     def __repr__(self) -> str:
-        return f"Node: {self.node.value}"
+        return f"Node: {self.node.value} offset {self.offset}"
+
+    def __len__(self):
+        return len(str(self))
 
     def walk(self):
         # print(f'\nNode {self}')
@@ -78,16 +117,6 @@ class DrawNode:
             self.right.walk()
 
 
-
-class EdgeDirection(Enum):
-    RIGHT = 0
-    LEFT = 1
-
-
-class Edge:
-    def __init__(self, direction: EdgeDirection, offset: int) -> None:
-        self.direction = direction
-        self.offset = offset
 
 
 def build_levels(root: DrawNode):
@@ -116,9 +145,36 @@ def build_levels(root: DrawNode):
 
     return result
 
-def draw(root: DrawNode):
+def draw(levels: list[list[DrawNode]]):
+    for level in levels:
+        line = ""
+        offset = 0
+        for node in level:
+            line += " " * (node.offset - offset)
+            line += str(node)
+            offset = node.offset + len(node)
 
-    pass
+        print(line)
+
+        edge_line = ""
+        edge_offset = 0
+        for node in level:
+            left = node.edges.left
+            right = node.edges.right
+            if left:
+                edge_line += " " * (left.offset - edge_offset)
+                edge_line += str(left)
+                edge_offset += (left.offset +1)
+
+
+            if right:
+                edge_line += " " * (right.offset - edge_offset)
+                edge_line += str(right)
+                edge_offset += (right.offset +1)
+        print(edge_line)
+
+
+    
 
 def draw_aux(nodes, edges, canvas_width):
     if len(nodes) == 0:
@@ -133,11 +189,12 @@ def draw_aux(nodes, edges, canvas_width):
 def main():
     print("\n\nT1")
     root = TreeNode(14, TreeNode(2, TreeNode(6, TreeNode(7))), TreeNode(5, TreeNode(1, TreeNode(9)), TreeNode(13, TreeNode(4), TreeNode(8))))
-    wrapped = DrawNode(root)
+    wrapped = DrawNode(root, 20)
     wrapped.walk()
 
     print("In order")
-    build_levels(wrapped)
+    levels = build_levels(wrapped)
+    draw(levels)
 
     print("\n\nT2")
     root = TreeNode(1, TreeNode(1234, TreeNode(123, TreeNode(23413)) ), TreeNode(129, TreeNode(32, TreeNode(3, TreeNode(5))), TreeNode(234)))

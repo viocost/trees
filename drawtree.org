@@ -42,8 +42,8 @@ since node values should not collide, let's say there must be at least 2 empty s
 ** Sizing between edges
 If value length is odd: the spacing must be odd
   12346
-   / \
-  1  90
+  /  \
+319  90
 
     4
    / \
