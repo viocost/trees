@@ -1,5 +1,7 @@
-from bst import TreeNode
 from enum import Enum
+from typing import List
+from bst import TreeNode
+
 
 
 class EdgeDirection(Enum):
@@ -51,7 +53,7 @@ class Edges:
 
 class DrawNode:
 
-    def __init__(self, node: TreeNode, position=60, level = 0, adjust_position = True) -> None:
+    def __init__(self, node: TreeNode, position=60, level = 0, adjust_position = True, target_margin=LEFT_MARGIN) -> None:
         self.node = node
         self._position = position
         self.level = level
@@ -89,7 +91,7 @@ class DrawNode:
 
 
         if adjust_position:
-            self.move(max(self.left_boundary - LEFT_MARGIN, 0) * -1)
+            self.move(max(self.left_boundary - target_margin, 0) * -1)
 
 
     @property
@@ -201,7 +203,7 @@ class DrawNode:
 
 
 
-def build_levels(root: DrawNode):
+def build_levels(root: DrawNode) -> list[list[DrawNode]]:
     result = []
 
     queue = [root]
@@ -223,36 +225,72 @@ def build_levels(root: DrawNode):
 
     return result
 
+def colors_16(s, color_):
+    return("\033[2;{num}m{s}\033[0;0m".format(num=str(color_), s=s))
+
+def colors_256(s, color_):
+    num1 = str(color_)
+    if color_ % 16 == 0:
+        return(f"\033[38;5;{num1}m{s}\033[0;0m\n")
+    else:
+        return(f"\033[38;5;{num1}m{s}\033[0;0m")
 
 
-def draw(root: DrawNode):
+def construct_node_string(node: DrawNode):
+    value = colors_256(str(node.node.value), node.node.color) if node.node.color is not None else str(node.node.value)
+    return "_" * node.extension_left + value + "_" * node.extension_right
 
-    levels = build_levels(root)
-    for level in levels:
-        line = ""
+
+def arrange_trees(*roots: DrawNode):
+    left_boundary = LEFT_MARGIN
+
+    for i in range(len(roots)):
+        roots[i].move(left_boundary - roots[i].left_boundary)
+        left_boundary = roots[i].right_boundary + 2
+
+def draw(*roots: DrawNode):
+
+    trees = [build_levels(root) for root in roots]
+
+    arrange_trees(*roots)
+
+    deepest = max([len(tree) for tree in trees])
+
+    for level in range(deepest):
+
         position = 0
-        for node in level:
-            line += " " * (node.extended_position - position)
-            line += str(node)
-            position = node.extended_position + len(node)
+        line = ""
+        for tree in trees:
+            if level >= len(tree):
+                continue
+
+            for node in tree[level]:
+                line += " " * (node.extended_position - position)
+                line += construct_node_string(node)
+                position = node.extended_position + len(node)
 
         print(line)
 
+
         edge_line = ""
         edge_position = 0
-        for node in level:
-            left = node.edges.left
-            right = node.edges.right
+        for tree in trees:
+            if level >= len(tree):
+                continue
 
-            if left:
-                edge_line += " " * (left.position - edge_position)
-                edge_line += str(left)
-                edge_position = (left.position +1)
+            for node in tree[level]:
+                left = node.edges.left
+                right = node.edges.right
 
-            if right:
-                edge_line += " " * (right.position - edge_position)
-                edge_line += str(right)
-                edge_position = (right.position +1)
+                if left:
+                    edge_line += " " * (left.position - edge_position)
+                    edge_line += str(left)
+                    edge_position = (left.position +1)
+
+                if right:
+                    edge_line += " " * (right.position - edge_position)
+                    edge_line += str(right)
+                    edge_position = (right.position +1)
 
         print(edge_line)
 
@@ -262,28 +300,8 @@ def draw(root: DrawNode):
 
 def main():
     root = TreeNode(144, TreeNode(2, TreeNode(6, TreeNode(7)), TreeNode(1, None, TreeNode(9, None, TreeNode(22)))), TreeNode(5, TreeNode(1, TreeNode(9, TreeNode(23234234232, TreeNode(3), TreeNode(2)), TreeNode(234234)), TreeNode(323423423423445345)), TreeNode(13, TreeNode(4), TreeNode(8))))
-    wrapped = DrawNode(root)
-    draw(wrapped)
-
-    # root = TreeNode(1, TreeNode(1234, TreeNode(123, TreeNode(23413)) ), TreeNode(129, TreeNode(32, TreeNode(3, TreeNode(5))), TreeNode(234)))
-    # root = TreeNode(89, TreeNode(1, TreeNode(4), TreeNode(3)), TreeNode(332332, None, TreeNode(9, None, TreeNode(1))))
-
-
-    # wrapped = DrawNode(root, 40)
-    # wrapped.walk()
-    # draw(wrapped)
-
-
-
-    #      ______1__
-    #     /         \
-    #  1234        1234
-    #     \
-    #     45
-    #       \
-    #       789
-    #         \
-    #        2341
+    t3 = DrawNode(root)
+    draw(t3)
 
     root = TreeNode(1, TreeNode(1234, None, TreeNode(45, None, TreeNode(789, None, TreeNode(2341)))), TreeNode(1234))
     wrapped = DrawNode(root,  99)
@@ -295,13 +313,14 @@ def main():
     draw(wrapped)
 
     root = TreeNode(92, TreeNode(3), TreeNode(14))
-    wrapped = DrawNode(root)
-    draw(wrapped)
+    t1 = DrawNode(root, target_margin=t3.right_boundary )
+    draw(t1)
 
     root = TreeNode(2, TreeNode(3), TreeNode(14))
-    wrapped = DrawNode(root)
-    draw(wrapped)
+    t2 = DrawNode(root, target_margin=t1.right_boundary )
+    print("Drawing\n\n")
+    draw(t3, t1, t2 )
+
 if __name__ == "__main__":
     main()
 
-main()
