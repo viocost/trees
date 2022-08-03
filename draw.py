@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List
-from bst import TreeNode
+from bt import TreeNode
 
 
 
@@ -248,7 +248,10 @@ def arrange_trees(*roots: DrawNode):
         roots[i].move(left_boundary - roots[i].left_boundary)
         left_boundary = roots[i].right_boundary + 2
 
-def draw(*roots: DrawNode):
+def draw(*roots: TreeNode):
+    draw_aux(*[DrawNode(root) for root in roots])
+
+def draw_aux(*roots: DrawNode):
 
     trees = [build_levels(root) for root in roots]
 
