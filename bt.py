@@ -23,6 +23,12 @@ class TreeNode:
     def __lt__(self, other) -> bool:
         return self.value < other.value
 
+    def __ge__(self, other) -> bool:
+        return self.value >= other.value
+
+    def __le__(self, other) -> bool:
+        return self.value <= other.value
+
     def clone(self):
         root = TreeNode(self.value, color=self.color)
         if self.left:
