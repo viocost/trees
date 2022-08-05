@@ -1,15 +1,24 @@
+def set_parent(parent, child):
+    if child:
+        print(f'Setting parent {parent}')
+        child.parent = parent
+    return child
+
 class TreeNode:
     def __init__(self, value, left=None, right=None, color=None) -> None:
+
+        self.count = 1
         self._value = value
-        self.left = left
-        self.right = right
+        self.parent = None
+        self.left = set_parent(self, left)
+        self.right = set_parent(self, right)
         self.color = color
 
     def __repr__(self) -> str:
-        return self._value
+        return str(self._value)
 
     def __str__(self) -> str:
-        return self._value
+        return str(self._value)
 
     def __len__(self):
         return len(self.__str__())
@@ -37,6 +46,3 @@ class TreeNode:
             root.right = self.right.clone()
 
         return root
-
-
-

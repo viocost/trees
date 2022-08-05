@@ -248,7 +248,7 @@ def arrange_trees(*roots: DrawNode):
         left_boundary = roots[i].right_boundary + 2
 
 def draw(*roots: TreeNode):
-    draw_aux(*[DrawNode(root) for root in roots])
+    draw_aux(*[DrawNode(root) for root in filter(lambda root: root, roots)])
 
 def draw_aux(*roots: DrawNode):
 
