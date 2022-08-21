@@ -1,6 +1,5 @@
 from enum import Enum
-from bt import TreeNode
-
+from lib.bt import TreeNode
 
 
 class EdgeDirection(Enum):
@@ -10,6 +9,11 @@ class EdgeDirection(Enum):
 PIVOT_MARGIN = 2
 LEFT_MARGIN = 2
 
+def get_len(node):
+    try:
+        return len(node)
+    except TypeError:
+        return len(str(node.value))
 
 class Edge:
     def __init__(self, direction: EdgeDirection, position: int) -> None:
@@ -61,7 +65,7 @@ class DrawNode:
 
         self.left = None
         self.right = None
-        self.width = len(node)
+        self.width = get_len(node)
         self.value_width = len(str(node.value))
         self.left_width = 0
         self.right_width = 0
@@ -102,7 +106,7 @@ class DrawNode:
     @property
     def extension_right(self):
         if self.edges.right:
-            return max( self.edges.right.position - (self.position + len(self.node))  , 0)
+            return max( self.edges.right.position - (self.position + get_len(self.node))  , 0)
         return 0
 
 
@@ -142,8 +146,8 @@ class DrawNode:
     @property
     def right_boundary(self):
         if self.right:
-            return max(self.position + len(self.node) + self.extension_right, self.right.right_boundary)
-        return self.position + len(self.node) + self.extension_right
+            return max(self.position + get_len(self.node) + self.extension_right, self.right.right_boundary)
+        return self.position + get_len(self.node) + self.extension_right
 
     @property
     def pivot(self):
@@ -153,13 +157,13 @@ class DrawNode:
     def left_child_position(self):
         if not self.edges.left or not self.node.left:
             raise ValueError("There is no left child node")
-        return self.offset + self.edges.left.position - len(self.node.left) % 2  - max(len(self.node.left) // 2 , 0)
+        return self.offset + self.edges.left.position - get_len(self.node.left) % 2  - max(get_len(self.node.left) // 2 , 0)
 
     @property
     def right_child_position(self):
         if not self.edges.right or not self.node.right:
             raise ValueError("There is no left child node")
-        return self.offset + self.edges.right.position + 1  - max(len(self.node.right) // 2 , 0)
+        return self.offset + self.edges.right.position + 1  - max(get_len(self.node.right) // 2 , 0)
 
     def get_base_edge_position_right(self):
         return self.offset +  self.pivot + 1 if len(self) % 2 == 1 else self.pivot + 2
@@ -236,7 +240,13 @@ def colors_256(s, color_):
 
 
 def construct_node_string(node: DrawNode):
-    value = colors_256(str(node.node.value), node.node.color) if node.node.color is not None else str(node.node.value)
+    value = ""
+
+    try:
+        value = colors_256(str(node.node.value), node.node.color)
+    except AttributeError:
+        value = str(node.node.value)
+
     return "_" * node.extension_left + value + "_" * node.extension_right
 
 
@@ -269,7 +279,7 @@ def draw_aux(*roots: DrawNode):
             for node in tree[level]:
                 line += " " * (node.extended_position - position)
                 line += construct_node_string(node)
-                position = node.extended_position + len(node)
+                position = node.extended_position + get_len(node)
 
         print(line)
 
@@ -301,27 +311,24 @@ def draw_aux(*roots: DrawNode):
 
 
 def main():
-    root = TreeNode(144, TreeNode(2, TreeNode(6, TreeNode(7)), TreeNode(1, None, TreeNode(9, None, TreeNode(22)))), TreeNode(5, TreeNode(1, TreeNode(9, TreeNode(23234234232, TreeNode(3), TreeNode(2)), TreeNode(234234)), TreeNode(323423423423445345)), TreeNode(13, TreeNode(4), TreeNode(8))))
-    t3 = DrawNode(root)
-    draw(t3)
+    root1 = TreeNode(144, TreeNode(2, TreeNode(6, TreeNode(7)), TreeNode(1, None, TreeNode(9, None, TreeNode(22)))), TreeNode(5, TreeNode(1, TreeNode(9, TreeNode(23234234232, TreeNode(3), TreeNode(2)), TreeNode(234234)), TreeNode(323423423423445345)), TreeNode(13, TreeNode(4), TreeNode(8))))
+    draw(root1)
 
-    root = TreeNode(1, TreeNode(1234, None, TreeNode(45, None, TreeNode(789, None, TreeNode(2341)))), TreeNode(1234))
-    wrapped = DrawNode(root,  99)
-    draw(wrapped)
+    root2 = TreeNode(1, TreeNode(1234, None, TreeNode(45, None, TreeNode(789, None, TreeNode(2341)))), TreeNode(1234))
+    draw(root2)
 
 
     root = TreeNode(92938479283749827834, TreeNode("foobar"), TreeNode("asdfsdfsdsdfsadfsadfasdfsaf"))
-    wrapped = DrawNode(root,  99)
-    draw(wrapped)
+    draw(root)
 
-    root = TreeNode(92, TreeNode(3), TreeNode(14))
-    t1 = DrawNode(root, target_margin=t3.right_boundary )
-    draw(t1)
+    root3 = TreeNode(92, TreeNode(3), TreeNode(14))
+    draw(root3)
 
-    root = TreeNode(2, TreeNode(3), TreeNode(14))
-    t2 = DrawNode(root, target_margin=t1.right_boundary )
     print("Drawing\n\n")
-    draw(t3, t1, t2 )
+    draw(root1, root2, root3)
+
+
+
 
 if __name__ == "__main__":
     main()

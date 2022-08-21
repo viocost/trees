@@ -1,6 +1,6 @@
-from bt import TreeNode, set_parent
-from draw import draw
-from copy import copy, deepcopy
+from lib.bt import TreeNode, set_parent
+from lib.draw import draw
+from copy import deepcopy
 
 class BSTNode(TreeNode):
 
@@ -140,15 +140,24 @@ class BSTNode(TreeNode):
             node.parent.replace_child(node, None)
             return root, node
 
-        right_leftmost = node.right.leftmost.clone()
-        right_leftmost.left = node.left
-        right_leftmost.right = node.right
-        right_leftmost.parent = node.parent
-        if node.parent:
-            node.parent.replace_child(node, right_leftmost)
-        node.right.delete(right_leftmost.value)
-        return right_leftmost.root, node
 
+        if node.right.left:
+            right_leftmost = node.right.leftmost.clone()
+            right_leftmost.left = node.left
+            right_leftmost.right = node.right
+            right_leftmost.parent = node.parent
+            if node.parent:
+                node.parent.replace_child(node, right_leftmost)
+            node.right.delete(right_leftmost._value)
+            return right_leftmost.root, node
+
+
+
+        node.right.parent = node.parent
+        node.right.left = node.left
+        if node.parent:
+            node.parent.replace_child(node, node.right)
+        return node.right.root, node
 
 
 

@@ -14,6 +14,10 @@ class TreeNode:
         self.right = set_parent(self, right)
         self.color = color
 
+    @property
+    def value(self):
+        return str(self)
+
     def __repr__(self) -> str:
         return str(self._value)
 
